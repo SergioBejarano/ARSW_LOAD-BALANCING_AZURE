@@ -347,6 +347,13 @@ Tabla 3:
 Tabla 4:
 ![](images/part1/table4.png)
 
+
+Las solicitudes que fallaron fueron por el siguiente tipo de error:
+<img width="840" height="604" alt="Captura de pantalla 2025-11-07 204037" src="https://github.com/user-attachments/assets/af9bc189-af77-4602-a64e-39d10afdb556" />
+
+El error ECONNRESET aparece debido a que la VM se sobrecarga con las múltiples solicitudes paralelas de cálculo del número de Fibonacci, un proceso altamente demandante de CPU. Cuando el servidor no logra completar la respuesta porque está ocupado procesando operaciones intensivas o su capacidad es insuficiente, la conexión se interrumpe abruptamente y Node.js cierra el socket de comunicación, lo que provoca que el cliente (Newman/Postman) reciba este error. En otras palabras, la aplicación continúa recibiendo peticiones aun cuando no puede seguir procesándolas, saturando el servidor hasta el punto en que este deja de responder adecuadamente y rompe las conexiones activas de forma inesperada.
+
+
 Al aumentar la cantidad de ejecuciones paralelas a 4, el sistema no mejora porcentualmente su desempeño; por el contrario, el tiempo promedio de respuesta tiende a empeorar. Esto ocurre debido a que la FibonacciApp realiza un cálculo altamente demandante de CPU y se ejecuta de manera totalmente síncrona y monohilo, por lo que cada petición adicional compite directamente por los mismos recursos del procesador. Como consecuencia, cuando se envían múltiples solicitudes simultáneas, la VM debe repartir su capacidad entre todas ellas, provocando mayor tiempo de espera por contexto y mayor ocupación del CPU, lo que afecta el rendimiento global.
 
 En conclusión, el sistema no escala eficientemente en paralelo, ya que su rendimiento está limitado por un único proceso de cómputo intensivo ejecutándose en la misma VM, sin distribución de carga ni paralelización interna del algoritmo.
