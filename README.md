@@ -2,6 +2,15 @@
 
 ### Arquitecturas de Software - ARSW
 
+---
+
+### Integrantes
+
+- Sergio Andrés Bejarano Rodríguez
+- Laura Daniela Rodríguez Sánchez
+
+---
+
 ## Escalamiento en Azure con Maquinas Virtuales, Sacale Sets y Service Plans
 
 ### Dependencias
@@ -368,21 +377,65 @@ Antes de continuar puede eliminar el grupo de recursos anterior para evitar gast
 
 ![](images/part2/part2-lb-create.png)
 
+Creamos el balanceador de carga, asignando el grupo de recursos y las características dadas
+
+![img.png](images/part2/img.png)
+
+Creamos una IP
+
+![img_1.png](images/part2/img_1.png)
+
 2. A continuación cree un _Backend Pool_, guiese con la siguiente imágen.
 
 ![](images/part2/part2-lb-bp-create.png)
+
+Creamos un backend pool en nuestro balanceador de cargas
+
+![img_2.png](images/part2/img_2.png)
+
+Verificamos que se haya creado y asignado correctamente
+
+![img_3.png](images/part2/img_3.png)
 
 3. A continuación cree un _Health Probe_, guiese con la siguiente imágen.
 
 ![](images/part2/part2-lb-hp-create.png)
 
+Creamos nuestro Health Probe
+
+![img_4.png](images/part2/img_4.png)
+
 4. A continuación cree un _Load Balancing Rule_, guiese con la siguiente imágen.
 
 ![](images/part2/part2-lb-lbr-create.png)
 
+Creamos un Load Balancing Rule con las características dadas y el Health Probe y Backend Pool anteriormente creados
+
+![img_5.png](images/part2/img_5.png)
+
+Verificamos que todo se encuentre correctamente configurado
+
+![img_6.png](images/part2/img_6.png)
+
+Creamos
+
+![img_7.png](images/part2/img_7.png)
+
 5. Cree una _Virtual Network_ dentro del grupo de recursos, guiese con la siguiente imágen.
 
 ![](images/part2/part2-vn-create.png)
+
+Creamos una virtual network con las características dadas
+
+![img_8.png](images/part2/img_8.png)
+
+![img_9.png](images/part2/img_9.png)
+
+![img_10.png](images/part2/img_10.png)
+
+Vamos al recurso y comprobamos que se creó correctamente
+
+![img_11.png](images/part2/img_11.png)
 
 #### Crear las maquinas virtuales (Nodos)
 
@@ -392,17 +445,54 @@ Ahora vamos a crear 3 VMs (VM1, VM2 y VM3) con direcciones IP públicas standar 
 
 ![](images/part2/part2-vm-create1.png)
 
+Creamos las 3 máquinas virtuales VM1, VM2 y VM3 con la configuración dada
+
+- VM1
+![img_12.png](images/part2/img_12.png)
+
+
+- VM2
+![img_13.png](images/part2/img_13.png)
+
+
+- VM3
+![img_15.png](images/part2/img_15.png)
+
+**Al realizar la configuración de la virtual network fue evidente que no se podia crear en zonas distintas de la misma región, y al cambiar la región se perdía la virtual network**
+
+![img_20.png](images/part2/img_20.png)
+
 2. En la configuración de networking, verifique que se ha seleccionado la _Virtual Network_ y la _Subnet_ creadas anteriormente. Adicionalmente asigne una IP pública y no olvide habilitar la redundancia de zona.
 
 ![](images/part2/part2-vm-create2.png)
+
+Verificamos que se ha seleccionado la Virtual Network y la Subnet creadas anteriormente. Adicionalmente asignamos una IP pública y habilitamos la redundancia de zona.
+
+![img_14.png](images/part2/img_14.png)
+
+Repetimos el proceso con las otras dos máquinas virtuales
+**En este paso no fue posible crear la tercera máquina virtual, ya que por el tipo de suscripción solo es posible tener 3 IP, las cuales se encuentran ya ocupadas por el balanceador de cargas y las otras dos maquinas virtuales**
+
+![img_19.png](images/part2/img_19.png)
 
 3. Para el Network Security Group seleccione "avanzado" y realice la siguiente configuración. No olvide crear un _Inbound Rule_, en el cual habilite el tráfico por el puerto 3000. Cuando cree la VM2 y la VM3, no necesita volver a crear el _Network Security Group_, sino que puede seleccionar el anteriormente creado.
 
 ![](images/part2/part2-vm-create3.png)
 
+Seleccionamos avanzado y creamos el siguiente network security group
+
+![img_16.png](images/part2/img_16.png)
+
+Verificamos que se asignó el nuevo grupo de seguridad, en las otras máquinas asignamos este grupo
+![img_17.png](images/part2/img_17.png)
+
 4. Ahora asignaremos esta VM a nuestro balanceador de carga, para ello siga la configuración de la siguiente imágen.
 
 ![](images/part2/part2-vm-create4.png)
+
+Asignamos nuestro balanceador de carga creado anteriormente, repetimos en las otras dos máquinas
+
+![img_18.png](images/part2/img_18.png)
 
 5. Finalmente debemos instalar la aplicación de Fibonacci en la VM. para ello puede ejecutar el conjunto de los siguientes comandos, cambiando el nombre de la VM por el correcto
 
@@ -420,18 +510,37 @@ npm install forever -g
 forever start FibonacciApp.js
 ```
 
-Realice este proceso para las 3 VMs, por ahora lo haremos a mano una por una, sin embargo es importante que usted sepa que existen herramientas para aumatizar este proceso, entre ellas encontramos Azure Resource Manager, OsDisk Images, Terraform con Vagrant y Paker, Puppet, Ansible entre otras.
+Creamos la máquina y verificamos que la implementación se haya realizado correctamente
+
+![img_21.png](images/part2/img_21.png)
+
+Nos conectamos a la máquina y ejecutamos los comandos
+
+![img_22.png](images/part2/img_22.png)
 
 #### Probar el resultado final de nuestra infraestructura
 
-1. Porsupuesto el endpoint de acceso a nuestro sistema será la IP pública del balanceador de carga, primero verifiquemos que los servicios básicos están funcionando, consuma los siguientes recursos:
+1. Por supuesto el endpoint de acceso a nuestro sistema será la IP pública del balanceador de carga, primero verifiquemos que los servicios básicos están funcionando, consuma los siguientes recursos:
 
 ```
 http://52.155.223.248/
 http://52.155.223.248/fibonacci/1
 ```
+`http://74.179.223.116/`
+
+![img_23.png](images/part2/img_23.png)
+
+`http://74.179.223.116/fibonacci/1`
+
+![img_24.png](images/part2/img_24.png)
 
 2. Realice las pruebas de carga con `newman` que se realizaron en la parte 1 y haga un informe comparativo donde contraste: tiempos de respuesta, cantidad de peticiones respondidas con éxito, costos de las 2 infraestrucruras, es decir, la que desarrollamos con balanceo de carga horizontal y la que se hizo con una maquina virtual escalada.
+
+Se realizó las pruebas de carga y se obtuvieron:
+
+![img.png](images/part2/img30.png)
+
+Se realizó el informe de comparación (archivo `Informe_VerticalVSHorizontal1`)
 
 3. Agregue una 4 maquina virtual y realice las pruebas de newman, pero esta vez no lance 2 peticiones en paralelo, sino que incrementelo a 4. Haga un informe donde presente el comportamiento de la CPU de las 4 VM y explique porque la tasa de éxito de las peticiones aumento con este estilo de escalabilidad.
 
@@ -442,14 +551,72 @@ newman run ARSW_LOAD-BALANCING_AZURE.postman_collection.json -e [ARSW_LOAD-BALAN
 newman run ARSW_LOAD-BALANCING_AZURE.postman_collection.json -e [ARSW_LOAD-BALANCING_AZURE].postman_environment.json -n 10
 ```
 
+Al no ser posible crear más maquinas virtuales (Por el poblema presentado con el tipo de suscripción indicado con anterioridad) únicamente se realiza un breve informe detallando el comportamiento de la CPU de las VM
+
+Se realizó el informe sobre el comportamiento de las CPU (archivo `Informe_CPU`)
+
+
 **Preguntas**
 
-- ¿Cuáles son los tipos de balanceadores de carga en Azure y en qué se diferencian?, ¿Qué es SKU, qué tipos hay y en qué se diferencian?, ¿Por qué el balanceador de carga necesita una IP pública?
+- ¿Cuáles son los tipos de balanceadores de carga en Azure y en qué se diferencian?,
+
+  En Azure hay dos tipos principales: el Load Balancer y el Application Gateway. El Load Balancer trabaja en la capa 4 (transporte), entonces básicamente distribuye el tráfico según la IP y el puerto, sin importarle qué tipo de aplicación está corriendo. Es más genérico y funciona con cualquier protocolo TCP/UDP. Por otro lado, el Application Gateway opera en la capa 7 (aplicación), lo que significa que puede tomar decisiones más inteligentes basándose en el contenido HTTP/HTTPS, como rutear según la URL o el hostname. Este último es ideal para aplicaciones web porque puede hacer cosas como SSL termination y tiene un WAF integrado.
+
+
+- ¿Qué es SKU, qué tipos hay y en qué se diferencian?
+
+  SKU significa "Stock Keeping Unit", pero básicamente es el tier o nivel del servicio que estás usando. En Load Balancer hay dos SKUs: Basic y Standard. El Basic es gratis pero tiene limitaciones importantes: solo soporta hasta 300 instancias, no tiene garantía de SLA y no funciona con Availability Zones. El Standard es de pago pero es mucho más robusto: soporta hasta 1000 instancias, tiene un SLA del 99.99%, funciona con zonas de disponibilidad y tiene mejores métricas y diagnósticos. Para producción casi siempre se usa Standard porque es más confiable.
+
+
+- ¿Por qué el balanceador de carga necesita una IP pública?
+
+  La IP pública es necesaria cuando quieres que tu aplicación sea accesible desde internet. Es básicamente la dirección que los usuarios van a usar para llegar a tu servicio. El balanceador recibe las peticiones en esa IP pública y luego las distribuye internamente a las VMs del backend que tienen IPs privadas. Si solo necesitas balanceo interno entre servicios que ya están en Azure, ahí sí puedes usar un Internal Load Balancer que solo tiene IP privada.
+
+
 - ¿Cuál es el propósito del _Backend Pool_?
+
+  El Backend Pool es simplemente el conjunto de máquinas virtuales o instancias que van a recibir el tráfico distribuido por el balanceador. Es como decirle al Load Balancer: "mira, estas son las VMs disponibles para atender peticiones". Puedes agregar o quitar instancias del pool dinámicamente, lo cual es super útil cuando haces auto-scaling. El balanceador solo envía tráfico a las instancias que están en este pool y que estén saludables según el health probe.
+
+
 - ¿Cuál es el propósito del _Health Probe_?
-- ¿Cuál es el propósito de la _Load Balancing Rule_? ¿Qué tipos de sesión persistente existen, por qué esto es importante y cómo puede afectar la escalabilidad del sistema?.
-- ¿Qué es una _Virtual Network_? ¿Qué es una _Subnet_? ¿Para qué sirven los _address space_ y _address range_?
-- ¿Qué son las _Availability Zone_ y por qué seleccionamos 3 diferentes zonas?. ¿Qué significa que una IP sea _zone-redundant_?
+
+  El Health Probe es el mecanismo que usa el balanceador para verificar que las instancias del backend pool estén funcionando correctamente. Básicamente hace peticiones periódicas (cada ciertos segundos) a un endpoint específico de tu aplicación. Si una VM no responde o responde con error varias veces seguidas, el balanceador la marca como "unhealthy" y deja de enviarle tráfico hasta que se recupere. Es super importante porque evita que los usuarios lleguen a servidores caídos o con problemas.
+
+
+- ¿Cuál es el propósito de la _Load Balancing Rule_?¿Qué tipos de sesión persistente existen, por qué esto es importante y cómo puede afectar la escalabilidad del sistema?.
+
+  La Load Balancing Rule define cómo se va a distribuir el tráfico: desde qué puerto público, hacia qué puerto del backend, usando qué protocolo, y con qué algoritmo de distribución. También aquí configuras la persistencia de sesión. Hay tres tipos: None (cada petición puede ir a cualquier servidor), Client IP (misma IP siempre va al mismo servidor), y Client IP and Protocol (considera IP + protocolo). La persistencia es importante para aplicaciones que guardan estado en el servidor, como sesiones de usuario. Si no usas persistencia, un usuario podría ir a un servidor diferente en cada petición y perder su sesión. Pero ojo, usar persistencia puede afectar la escalabilidad porque si tienes muchos usuarios detrás de un mismo NAT o proxy, todos irían al mismo servidor y desbalancearías la carga.
+
+
+- ¿Qué es una _Virtual Network_? ¿Qué es una _Subnet_?
+
+  Una Virtual Network (VNet) es básicamente tu red privada en Azure. Es como tener tu propia LAN en la nube donde puedes poner tus recursos y controlar cómo se comunican entre ellos. Las Subnets son subdivisiones de esa VNet, sirven para organizar y segmentar tus recursos. Por ejemplo, podrías tener una subnet para tus servidores web, otra para bases de datos, y otra para servicios internos.
+
+
+- ¿Para qué sirven los _address space_ y _address range_?
+
+  El address space es el rango completo de IPs que tiene tu VNet, por ejemplo 10.0.0.0/16. Define el tamaño total de tu red. El address range es el rango específico que le asignas a cada subnet dentro de ese address space, por ejemplo 10.0.1.0/24 para la subnet de web servers. Es importante planificarlos bien porque una vez creados no es tan fácil cambiarlos, y necesitas asegurarte de tener suficientes IPs para crecer.
+
+
+- ¿Qué son las _Availability Zone_ y por qué seleccionamos 3 diferentes zonas?. ¿
+
+  Las Availability Zones son datacenters físicamente separados dentro de una misma región de Azure. Cada zona tiene su propia energía, refrigeración y red independiente. Seleccionamos 3 zonas diferentes para tener alta disponibilidad: si un datacenter completo se cae (por un corte de luz, desastre natural, etc.), tu aplicación sigue corriendo en las otras dos zonas. Es básicamente para protegerte contra fallas a nivel de infraestructura física.
+
+
+- Qué significa que una IP sea _zone-redundant_?
+
+  Una IP zone-redundant significa que no está atada a una zona específica, sino que puede recibir tráfico y distribuirlo a recursos en cualquiera de las zonas de disponibilidad. Si usas una IP zone-redundant con tu Load Balancer, y una zona completa se cae, la IP sigue funcionando y simplemente deja de enviar tráfico a esa zona, redirigiendo todo a las zonas saludables. Es más resiliente que tener una IP en una sola zona.
+
+
 - ¿Cuál es el propósito del _Network Security Group_?
+
+  El Network Security Group (NSG) es básicamente un firewall virtual que controla el tráfico de red hacia y desde tus recursos. Defines reglas de seguridad que permiten o niegan tráfico basándose en IP origen/destino, puerto y protocolo. Por ejemplo, puedes crear una regla que solo permita tráfico HTTP/HTTPS desde internet, pero bloquee todo lo demás. Es una capa de seguridad fundamental para proteger tus VMs y subnets de accesos no autorizados.
+
+
 - Informe de newman 1 (Punto 2)
+  Se realizó el informe en el archivo `Informe_VerticalVSHorizontal1`
+
+
 - Presente el Diagrama de Despliegue de la solución.
+
+![Diagrama.png](Diagrama.png)
